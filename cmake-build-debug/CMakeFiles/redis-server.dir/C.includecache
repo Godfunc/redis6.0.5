@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/cygdrive/d/source_code/redis-6.0.5/src/crc64.h
+stdint.h
+-
+
+/cygdrive/d/source_code/redis-6.0.5/src/release.c
+string.h
+-
+stdio.h
+-
+release.h
+/cygdrive/d/source_code/redis-6.0.5/src/release.h
+version.h
+/cygdrive/d/source_code/redis-6.0.5/src/version.h
+crc64.h
+/cygdrive/d/source_code/redis-6.0.5/src/crc64.h
+
+/cygdrive/d/source_code/redis-6.0.5/src/release.h
+
+/cygdrive/d/source_code/redis-6.0.5/src/version.h
+
