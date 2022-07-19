@@ -1,1 +1,0 @@
-/usr/bin/gcc.exe -g  -Wl,--enable-auto-import CMakeFiles/linenoise.dir/example.c.o CMakeFiles/linenoise.dir/linenoise.c.o  -o linenoise.exe -Wl,--out-implib,liblinenoise.dll.a -Wl,--major-image-version,0,--minor-image-version,0 

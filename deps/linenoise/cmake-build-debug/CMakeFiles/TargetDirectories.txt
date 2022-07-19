@@ -1,3 +1,0 @@
-/cygdrive/d/sourcecode/redis-6.0.5/deps/linenoise/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/cygdrive/d/sourcecode/redis-6.0.5/deps/linenoise/cmake-build-debug/CMakeFiles/edit_cache.dir
-/cygdrive/d/sourcecode/redis-6.0.5/deps/linenoise/cmake-build-debug/CMakeFiles/linenoise.dir
