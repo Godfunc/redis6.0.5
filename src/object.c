@@ -141,15 +141,16 @@ robj *createStringObjectFromLongLongWithOptions(long long value, int valueobj) {
         valueobj = 0;
     }
 
-    if (value >= 0 && value < OBJ_SHARED_INTEGERS && valueobj == 0) {
+    if (value >= 0 && value < OBJ_SHARED_INTEGERS && valueobj == 0) { // 看是否能用共享integers数组表示
         incrRefCount(shared.integers[value]);
         o = shared.integers[value];
     } else {
-        if (value >= LONG_MIN && value <= LONG_MAX) {
+        if (value >= LONG_MIN && value <= LONG_MAX) { // 如果能用long 表示，就将其设置为 OBJ_ENCODING_INT 编码
             o = createObject(OBJ_STRING, NULL);
             o->encoding = OBJ_ENCODING_INT;
             o->ptr = (void*)((long)value);
         } else {
+            // 使用 OBJ_ENCODING_RAW 编码
             o = createObject(OBJ_STRING,sdsfromlonglong(value));
         }
     }
@@ -435,10 +436,10 @@ void trimStringObjectIfNeeded(robj *o) {
     }
 }
 
-/* Try to encode a string object in order to save space */
+/* 尝试设置字符串的编码，为了节约空间 Try to encode a string object in order to save space */
 robj *tryObjectEncoding(robj *o) {
     long value;
-    sds s = o->ptr;
+    sds s = o->ptr; // 获取set的 value
     size_t len;
 
     /* Make sure this is a string object, the only type we encode
@@ -461,11 +462,12 @@ robj *tryObjectEncoding(robj *o) {
      * Note that we are sure that a string larger than 20 chars is not
      * representable as a 32 nor 64 bit integer. */
     len = sdslen(s);
-    if (len <= 20 && string2l(s,len,&value)) {
+    if (len <= 20 && string2l(s,len,&value)) { // 如果字符串长度<=20，并且能转为long类型，就使用 OBJ_ENCODING_INT 1
         /* This object is encodable as a long. Try to use a shared object.
          * Note that we avoid using shared integers when maxmemory is used
          * because every object needs to have a private LRU field for the LRU
          * algorithm to work well. */
+        // 看共享integer中有没有这个数，有就直接使用
         if ((server.maxmemory == 0 ||
             !(server.maxmemory_policy & MAXMEMORY_FLAG_NO_SHARED_INTEGERS)) &&
             value >= 0 &&
@@ -473,14 +475,14 @@ robj *tryObjectEncoding(robj *o) {
         {
             decrRefCount(o);
             incrRefCount(shared.integers[value]);
-            return shared.integers[value];
+            return shared.integers[value]; // 在integers数组中存了10000个redisObject对象，里面的值与下标一样
         } else {
-            if (o->encoding == OBJ_ENCODING_RAW) {
+            if (o->encoding == OBJ_ENCODING_RAW) { // 如果当前编码是 OBJ_ENCODING_RAW，并且符合转为long表示，就使用OBJ_ENCODING_INT
                 sdsfree(o->ptr);
                 o->encoding = OBJ_ENCODING_INT;
                 o->ptr = (void*) value;
                 return o;
-            } else if (o->encoding == OBJ_ENCODING_EMBSTR) {
+            } else if (o->encoding == OBJ_ENCODING_EMBSTR) { // 如果当前编码是 OBJ_ENCODING_EMBSTR，就
                 decrRefCount(o);
                 return createStringObjectFromLongLongForValue(value);
             }
@@ -491,7 +493,7 @@ robj *tryObjectEncoding(robj *o) {
      * try the EMBSTR encoding which is more efficient.
      * In this representation the object and the SDS string are allocated
      * in the same chunk of memory to save space and cache misses. */
-    if (len <= OBJ_ENCODING_EMBSTR_SIZE_LIMIT) {
+    if (len <= OBJ_ENCODING_EMBSTR_SIZE_LIMIT) { // 如果字符串长度 <= 44，编码方式设置为 OBJ_ENCODING_EMBSTR
         robj *emb;
 
         if (o->encoding == OBJ_ENCODING_EMBSTR) return o;

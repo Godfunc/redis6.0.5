@@ -44,6 +44,9 @@
 /* Unused arguments generate annoying warnings... */
 #define DICT_NOTUSED(V) ((void) V)
 
+/**
+ * key-value 结构，同时存放了指向下一个节点的指针
+ */
 typedef struct dictEntry {
     void *key;
     union {
@@ -76,10 +79,10 @@ typedef struct dictht {
 typedef struct dict {
     dictType *type;
     void *privdata;
-    dictht ht[2];
-    long rehashidx; /* rehashing not in progress if rehashidx == -1 */
+    dictht ht[2]; // 真正存储数据的哈希表，有两个哈希表的原因是为了实现渐进式rehash
+    long rehashidx; /* 表示rehash的进度 rehashing not in progress if rehashidx == -1 */
     unsigned long iterators; /* number of iterators currently running */
-} dict;
+}   dict;
 
 /* If safe is set to 1 this is a safe iterator, that means, you can call
  * dictAdd, dictFind, and other functions against the dictionary even while
